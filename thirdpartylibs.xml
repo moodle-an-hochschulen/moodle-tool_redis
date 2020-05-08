@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>lib/redis-stats</location>
+    <name>Redis Stats</name>
+    <license>MIT</license>
+    <version>1.0.1</version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>
