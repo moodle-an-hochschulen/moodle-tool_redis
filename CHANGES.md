@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v3.7-r2
 
 * 2020-09-28 - Enhance Security note in README.md with regards to the risk of flushing the Redis DB
 
