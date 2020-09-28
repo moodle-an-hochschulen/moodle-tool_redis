@@ -51,9 +51,11 @@ This plugin works in a really simple way. It adds an admin tool page to Moodle's
 Security note
 -------------
 
-The Redis management GUI was added as a library to this Moodle plugin and was renamed to /lib/redis-gui/redis.php.inc.
+The Redis management GUI was added as a library to this Moodle plugin and the library files were renamed to /lib/redis-gui/redis.php.inc and /lib/redis-gui/flushdb.php.inc.
 
 There is a potential for sensitive data leak, not personal data but data about the webserver's PHP configuration, if your webserver is configured to interpret *.inc files as PHP. An anonymous user could then visit the library's index page directly via https://yourmoodle.com/admin/tool/redis/lib/redis-gui/redis.php.inc and would see the Redis management GUI circumventing Moodle's access control.
+
+Similarly, there is also a potential for a performance degradation attack if your webserver is configured to interpret *.inc files as PHP. An anonymous user could then visit the library's flush page directly via https://yourmoodle.com/admin/tool/redis/lib/redis-gui/flushdb.php.inc with appropriate parameters and would flush the Redis DB circumventing Moodle's access control.
 
 Please make sure that your webserver does not interpret *.inc files as PHP (which should be the default) or take any other measure that this file can not be accessed directly by a browser.
 
