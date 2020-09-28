@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2020-09-28 - Prepare compatibility for Moodle 3.8.
+
 ### v3.7-r3
 
 * 2020-09-28 - Remove hardcoded admin directory in paths - Thanks to @adamtppaw.
