@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v3.7-r3
 
 * 2020-09-28 - Remove hardcoded admin directory in paths - Thanks to @adamtppaw.
 
