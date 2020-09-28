@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2020-09-28 - Remove hardcoded admin directory in paths - Thanks to @adamtppaw.
+
 ### v3.7-r2
 
 * 2020-09-28 - Enhance Security note in README.md with regards to the risk of flushing the Redis DB
