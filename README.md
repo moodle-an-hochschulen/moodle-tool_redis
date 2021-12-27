@@ -1,7 +1,7 @@
 moodle-tool_redis
 =================
 
-[![Moodle Plugin CI](https://github.com/moodleuulm/moodle-tool_redis/workflows/Moodle%20Plugin%20CI/badge.svg?branch=master)](https://github.com/moodleuulm/moodle-tool_redis/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3Amaster)
+[![Moodle Plugin CI](https://github.com/moodleuulm/moodle-tool_redis/workflows/Moodle%20Plugin%20CI/badge.svg?branch=MOODLE_311_STABLE)](https://github.com/moodleuulm/moodle-tool_redis/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3AMOODLE_311_STABLE)
 
 Moodle plugin which adds a Redis management GUI to Moodle site administration.
 
