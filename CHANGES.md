@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2022-06-26 - Update maintainers and copyrights in README.md.
+
 ### v3.11-r1
 
 * 2021-07-19 - Prepare compatibility for Moodle 3.11.
