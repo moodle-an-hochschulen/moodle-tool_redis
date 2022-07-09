@@ -24,8 +24,6 @@
 
 namespace tool_redis\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy Subsystem implementing null_provider.
  *
