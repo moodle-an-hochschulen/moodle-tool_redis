@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v4.0-r1
 
 * 2022-08-08 - Improvement: Get rid of second vertical scrollbar around Redis Stats management GUI
 * 2022-07-12 - Prepare compatibility for Moodle 4.0.
