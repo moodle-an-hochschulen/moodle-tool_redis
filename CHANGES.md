@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v4.1-r1
 
 * 2023-04-30 - Update redis-stats library to latest version.
 * 2023-01-21 - Prepare compatibility for Moodle 4.1.
