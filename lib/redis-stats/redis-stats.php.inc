@@ -163,11 +163,11 @@ function time_elapsed($secs)
 {
 	if (!$secs) return;
 	$bit = [
-		' year'      => $secs / 31556926 % 12,
-		' week'      => $secs / 604800 % 52,
-		' day'       => $secs / 86400 % 7,
-		' hour'      => $secs / 3600 % 24,
-		' minute'    => $secs / 60 % 60,
+		' year'      => (int) ($secs / 31556926) % 12,
+		' week'      => (int) ($secs / 604800) % 52,
+		' day'       => (int) ($secs / 86400) % 7,
+		' hour'      => (int) ($secs / 3600) % 24,
+		' minute'    => (int) ($secs / 60) % 60,
 		' second'    => $secs % 60,
 	];
 
