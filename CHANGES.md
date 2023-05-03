@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v4.1-r2
 
 * 2023-05-03 - Bugfix: Get rid of a debugging message in redis-stats library on PHP 8.1.
 * 2023-04-30 - Tests: Updated Moodle Plugin CI to use PHP 8.1 and Postgres 13 from Moodle 4.1 on.
