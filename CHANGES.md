@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2023-10-10 - Updated Moodle Plugin CI to latest upstream recommendations
+
 ### v4.1-r2
 
 * 2023-05-03 - Bugfix: Get rid of a debugging message in redis-stats library on PHP 8.1.
