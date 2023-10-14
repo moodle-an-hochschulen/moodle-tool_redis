@@ -37,11 +37,11 @@ defined('MOODLE_INTERNAL') || die();
 // IP/Socket (string):                IP address or socket of the server
 // Port (integer):                    port of server, use -1 for socket
 // Password entry (string|array):     credentials for the server (optional)
-//$ret = cache_administration_helper::get_store_instance_summaries();
-//$ret = cachestore_redis::config_get_configuration_array($data)
+// $ret = cache_administration_helper::get_store_instance_summaries();
+// $ret = cachestore_redis::config_get_configuration_array($data)
 //
 // First: Initialize empty stores array.
-$servers = array();
+$servers = [];
 
 // Second: Get all MUC stores' configurations.
 $factory = cache_factory::instance();
