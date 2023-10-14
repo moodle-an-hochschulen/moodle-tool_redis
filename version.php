@@ -30,4 +30,4 @@ $plugin->release = 'v4.1-r2';
 $plugin->requires = 2022112800;
 $plugin->supported = [401, 401];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array('cachestore_redis' => 2022112800);
+$plugin->dependencies = ['cachestore_redis' => 2022112800];
