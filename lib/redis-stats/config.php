@@ -60,8 +60,23 @@ foreach ($stores as $key => $store) {
         continue;
     }
 
+    // First need to check server connection string: if no port and using non tcp unix socket - ommit port and add 'unix://'
+    // Do it like in /cache/stores/redis/lib.php:new_redis()
+    $server = $store['configuration']['server'];
+    $port = 6379;
+    if ($server[0] === '/') {
+        $port = 0;
+        $server = 'unix://' . $server;
+    } else {
+        if (strpos($server, ':')) { // Check for custom port.
+            $serverconf = explode(':', $server);
+            $server = $serverconf[0];
+            $port = $serverconf[1];
+        }
+    }
+    
     // Remember the Redis store information.
-    $servers[] = [$store['name'], $store['configuration']['server'], 6379, $store['configuration']['password']];
+    $servers[] = [$store['name'], $server, $port, $store['configuration']['password']];
 }
 
 // Forth: If there isn't any Redis store configured, we should stop here.
