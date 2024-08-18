@@ -24,6 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Redis management';
 $string['noredisstoreconfigured'] = 'There isn\'t any Redis caching backend configured.';
+$string['pluginname'] = 'Redis management';
 $string['privacy:metadata'] = 'The Redis management plugin provides extended functionality to Moodle admins, but does not store any personal data.';
