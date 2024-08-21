@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2024-08-21 - Replace deprecated print_error() with moodle_exception.
+
 ### v4.3-r2
 
 * 2024-08-11 - Add section for scheduled tasks to README
