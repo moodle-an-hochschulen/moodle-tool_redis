@@ -66,7 +66,7 @@ foreach ($stores as $key => $store) {
 
 // Forth: If there isn't any Redis store configured, we should stop here.
 if (count($servers) < 1) {
-    print_error('noredisstoreconfigured', 'tool_redis');
+    throw new moodle_exception('noredisstoreconfigured', 'tool_redis');
 }
 
 // Show a 'Flush' button for databases.
