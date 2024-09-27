@@ -61,7 +61,16 @@ foreach ($stores as $key => $store) {
     }
 
     // Remember the Redis store information.
-    $servers[] = [$store['name'], $store['configuration']['server'], 6379, $store['configuration']['password']];
+    $server_info = explode(":", $store['configuration']['server']);
+    $servers[] = [$store['name'], $server_info[0], $server_info[1] ?? 6379, $store['configuration']['password']];
+}
+if (isset($CFG->cache_redis) && !is_null($CFG->cache_redis) && !empty($CFG->cache_redis)) {
+    if (isset($CFG->cache_redis['INFO']) && !is_null($CFG->cache_redis['INFO']) && !empty($CFG->cache_redis['INFO'])) {
+        $command[$CFG->cache_redis['cache_instance']]['INFO'] = $CFG->cache_redis['INFO'];
+    }
+    if (isset($CFG->cache_redis['AUTH']) && !is_null($CFG->cache_redis['AUTH']) && !empty($CFG->cache_redis['AUTH'])) {
+        $command[$CFG->cache_redis['cache_instance']]['AUTH'] = $CFG->cache_redis['AUTH'];
+    }
 }
 
 // Forth: If there isn't any Redis store configured, we should stop here.

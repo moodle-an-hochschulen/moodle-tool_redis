@@ -41,6 +41,16 @@ Site administration -> Server -> Redis management.
 
 The Redis management GUI should be self-explanatory for experienced PHP administrators.
 
+As the Moodle Cache Plugin for REDIS doesn't support command renaming, you need an additional entry in config.php.
+It has to be in the following form:
+```
+$CFG->cache_redis = array(
+    'cache_instance' => 'NAME OF INSTANCE',
+    'INFO' => 'RENAMED INFO COMMAND',
+    'AUTH' => 'RENAMED AUTH COMMAND',
+);
+```
+You can choose one of 'INFO' and 'AUTH' or both.
 
 Capabilities
 ------------
