@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2024-10-07 - Prepare compatibility for Moodle 4.5.
+
 ### v4.4-r2
 
 * 2024-10-29 - Replace Redis Stats GUI with the newer Valkey Stats GUI
