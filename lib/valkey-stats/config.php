@@ -44,7 +44,7 @@ defined('MOODLE_INTERNAL') || die();
 $servers = [];
 
 // Second: Get all MUC stores' configurations.
-$factory = cache_factory::instance();
+$factory = \core_cache\factory::instance();
 $config = $factory->create_config_instance();
 $stores = $config->get_all_stores();
 
