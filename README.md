@@ -17,9 +17,9 @@ Motivation for this plugin
 
 For performance reasons, Moodle should always be run with a Caching backend. Redis is such a caching backend which Moodle can connect to. Unfortunately, Redis is kind of a black box and doesn't provide a management interface by default.
 
-Luckily, there are some free Redis management GUIs out there with Redis Stats by Helmut K. C. Tessarek (https://github.com/tessus/redis-stats) being a really nice and compact one. As a Moodle server administrator, you can just throw Redis Stats somewhere onto your Moodle server and get a Redis management GUI instantly. However, this approach requires that you protect Redis Stats from unauthorized access manually in your webserver and comes with the downside that Redis Stats is located outside Moodle.
+Luckily, there are some free Redis management GUIs out there with Valkey Stats by Helmut K. C. Tessarek (https://github.com/tessus/valkey-stats) being a really nice and compact one. As a Moodle server administrator, you can just throw Valkey Stats somewhere onto your Moodle server and get a Redis management GUI instantly. However, this approach requires that you protect Valkey Stats from unauthorized access manually in your webserver and comes with the downside that Valkey Stats is located outside Moodle.
 
-For these reasons, we have packaged Redis Stats as a very simple Moodle admin tool providing it within Moodle site adminstration for Moodle administrators only.
+For these reasons, we have packaged Valkey Stats as a very simple Moodle admin tool providing it within Moodle site adminstration for Moodle administrators only.
 
 
 Installation
@@ -171,5 +171,5 @@ It was contributed to the Moodle an Hochschulen e.V. plugin catalogue in 2022.
 Credits
 -------
 
-This Moodle plugin is only a simple wrapper for the Redis Stats management GUI by Helmut K. C. Tessarek.      
-Helmut owns all copyrights for Redis Stats and maintains this tool on https://github.com/tessus/redis-stats.
+This Moodle plugin is only a simple wrapper for the Valkey Stats management GUI by Helmut K. C. Tessarek.
+Helmut owns all copyrights for Valkey Stats and maintains this tool on https://github.com/tessus/valkey-stats.
