@@ -17,9 +17,9 @@
 /**
  * Admin tool "Redis management" - Redis Stats configuration file
  *
- * The Redis Stats code which we have placed into lib/redis-stats/redis-stats.php.inc
+ * The Valkey Stats code which we have placed into lib/valkey-stats/valkey-stats.php.inc
  * is looking for a file called config.php and includes this file.
- * In this file, we can set the configuration of Redis Stats.
+ * In this file, we can set the configuration of Valkey Stats.
  *
  * @package    tool_redis
  * @copyright  2020 Alexander Bias, Ulm University <alexander.bias@uni-ulm.de>
@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Get the Redis server(s) configuration from the MUC configuration and provide it in a way as Redis Stats expects it.
+// Get the Redis server(s) configuration from the MUC configuration and provide it in a way as Valkey Stats expects it.
 //
 // Servers are defined as an array
 // [ Name, IP/Socket, Port, Password ]
