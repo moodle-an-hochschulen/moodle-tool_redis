@@ -14,7 +14,7 @@ General
 Upstream changes
 ----------------
 
-* This plugin relies on the thiry-party Redis Stats management GUI tool which is located within the plugin directory. Every now and then, it should be checked if there is a new version which could be updated in the plugin.
+* This plugin relies on the thiry-party Valkey Stats management GUI tool which is located within the plugin directory. Every now and then, it should be checked if there is a new version which could be updated in the plugin.
 
 
 Automated tests

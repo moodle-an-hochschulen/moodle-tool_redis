@@ -17,9 +17,9 @@
 /**
  * Admin tool "Redis management" - Redis Stats Flush DB stub.
  *
- * The Redis Stats code which we have placed into lib/redis-stats/redis-stats.php.inc
+ * The Valkey Stats code which we have placed into lib/valkey-stats/valkey-stats.php.inc
  * is calling a file called flushdb.php to flush the Redis DB.
- * With this file, we provide a stub at the location where the Redis Stats code expect it to be and include the original file.
+ * With this file, we provide a stub at the location where the Valkey Stats code expect it to be and include the original file.
  *
  * @package    tool_redis
  * @copyright  2020 Alexander Bias, Ulm University <alexander.bias@uni-ulm.de>
@@ -36,5 +36,5 @@ require_login();
 // Make sure that only admins flush the DB.
 require_capability('moodle/site:config', context_system::instance());
 
-// Include Redis Stats Flush DB.
-require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/redis/lib/redis-stats/flushdb.php.inc');
+// Include Valkey Stats Flush DB.
+require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/redis/lib/valkey-stats/flushdb.php.inc');

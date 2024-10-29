@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2024-10-29 - Replace Redis Stats GUI with the newer Valkey Stats GUI
+
 ### v4.3-r3
 
 * 2024-08-21 - Replace deprecated print_error() with moodle_exception.

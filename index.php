@@ -39,7 +39,7 @@ $PAGE->set_heading($title);
 ob_start();
 
 // Include Redis Stats.
-require_once(__DIR__ . '/lib/redis-stats/redis-stats.php.inc');
+require_once(__DIR__ . '/lib/valkey-stats/valkey-stats.php.inc');
 
 // Get buffered content and finish buffering.
 $output = ob_get_contents();

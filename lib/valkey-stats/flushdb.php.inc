@@ -1,13 +1,13 @@
 <?php
 
-/* KIZ MODIFICATION START
-   REASON: Redis Stats must not use any custom session handling. */
+/* MAH MODIFICATION START
+   REASON: Valkey Stats must not use any custom session handling. */
 require(__DIR__ . '/../../../../../config.php');
 if (!isset($_GET['id']) || isset($_GET['id']) && $_GET['id'] != sesskey())
 {
     die("Invalid request.");
 }
-/* KIZ MODIFICATION END */
+/* MAH MODIFICATION END */
 /* ORIGINAL START
 session_start();
 
@@ -66,7 +66,18 @@ if (isset($command[$serverName]['AUTH']) && !is_null($command[$serverName]['AUTH
 	$AUTH = $command[$serverName]['AUTH'];
 }
 
-// Talk to Redis server
+// Functions
+function debug($var, $pre = true)
+{
+	if (DEBUG)
+	{
+		if ($pre) echo "<pre>".PHP_EOL;
+		var_dump($var);
+		if ($pre) echo "</pre>".PHP_EOL;
+	}
+}
+
+// Talk to server
 $error = null;
 
 $fp = @fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
@@ -79,8 +90,9 @@ if (!$fp)
 }
 else
 {
-	$redisCommand = '';
-	$ASYNC        = '';
+	$vkCommand = '';
+	$ASYNC     = '';
+	$numCmds   = 0;
 
 	isset($servers[$server][3]) ? $pwdEntry = $servers[$server][3] : $pwdEntry = null;
 	if (!is_null($pwdEntry) && !empty($pwdEntry))
@@ -97,7 +109,8 @@ else
 		{
 			$credentials = $pwdEntry;
 		}
-		$redisCommand = "$AUTH $credentials\r\n";
+		$vkCommand = "$AUTH $credentials\r\n";
+		$numCmds++;
 	}
 	if ($async) // we want async flush
 	{
@@ -105,14 +118,16 @@ else
 	}
 	if ($db != -1) // one specific database
 	{
-		$redisCommand .= "SELECT $db\r\n$FLUSHDB$ASYNC\r\nQUIT\r\n";
+		$vkCommand .= "SELECT $db\r\n$FLUSHDB$ASYNC\r\nQUIT\r\n";
+		$numCmds += 3;
 	}
 	else // entire instance
 	{
-		$redisCommand .= "$FLUSHALL$ASYNC\r\nQUIT\r\n";
+		$vkCommand .= "$FLUSHALL$ASYNC\r\nQUIT\r\n";
+		$numCmds += 2;
 	}
 
-	fwrite($fp, $redisCommand);
+	fwrite($fp, $vkCommand);
 	while (!feof($fp))
 	{
 		$info[] = trim(fgets($fp));
@@ -120,25 +135,19 @@ else
 	fclose($fp);
 }
 
-if (array_unique($info) === array('+OK'))
+for ($i = 0; $i < $numCmds; $i++)
 {
-/* KIZ MODIFICATION START
-   REASON: Redis Stats must not use any custom session handling. */
+	if ($info[$i] != '+OK')
+	{
+		debug($vkCommand);
+		debug($info);
+		die($info[$i]);
+	}
+}
+
+/* MAH MODIFICATION START
+   REASON: Valkey Stats must not use any custom session handling. */
 /* ORIGINAL START
-	$_SESSION['id'] = '';
+$_SESSION['id'] = '';
    ORIGINAL END */
-	echo "Success";
-}
-else
-{
-	if (DEBUG === true)
-	{
-		var_dump($redisCommand);
-		var_dump($info);
-	}
-	foreach ($info as $v)
-	{
-		if ($v != '+OK')
-			die($v);
-	}
-}
+   echo "Success";
