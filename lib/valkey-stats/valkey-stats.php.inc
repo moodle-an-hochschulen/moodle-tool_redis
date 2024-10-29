@@ -1,9 +1,9 @@
 <?php
 
-/* KIZ MODIFICATION START
-   REASON: Redis Stats must not use any custom session handling. */
+/* MAH MODIFICATION START
+   REASON: Valkey Stats must not use any custom session handling. */
 $id = bin2hex(random_bytes(16));
-/* KIZ MODIFICATION END */
+/* MAH MODIFICATION END */
 /* ORIGINAL START
 session_start();
 
@@ -25,8 +25,8 @@ if (!$servers)
 	die("No servers in config found.");
 }
 
-define("URL", "https://github.com/tessus/redis-stats");
-define("UPDATE_URL", "https://raw.githubusercontent.com/tessus/redis-stats/master/VERSION");
+define("URL", "https://github.com/tessus/valkey-stats");
+define("UPDATE_URL", "https://raw.githubusercontent.com/tessus/valkey-stats/master/VERSION");
 
 $_SESSION['updateURL'] = UPDATE_URL;
 
@@ -84,7 +84,7 @@ if (isset($command[$serverName]['INFO']) && !is_null($command[$serverName]['INFO
 	$INFO = $command[$serverName]['INFO'];
 }
 
-// Talk to Redis server
+// Talk to server
 $error = null;
 
 $fp = @fsockopen($servers[$server][1], $servers[$server][2], $errno, $errstr, 30);
@@ -99,7 +99,7 @@ if (!$fp)
 }
 else
 {
-	$redisCommand = '';
+	$vkCommand = '';
 
 	isset($servers[$server][3]) ? $pwdEntry = $servers[$server][3] : $pwdEntry = null;
 	if (!is_null($pwdEntry) && !empty($pwdEntry))
@@ -116,11 +116,11 @@ else
 		{
 			$credentials = $pwdEntry;
 		}
-		$redisCommand = "$AUTH $credentials\r\n";
+		$vkCommand = "$AUTH $credentials\r\n";
 	}
-	$redisCommand .= "$INFO\r\nQUIT\r\n";
+	$vkCommand .= "$INFO\r\nQUIT\r\n";
 
-	fwrite($fp, $redisCommand);
+	fwrite($fp, $vkCommand);
 	while (!feof($fp))
 	{
 		$info = explode(':', trim(fgets($fp)), 2);
@@ -157,17 +157,17 @@ $getDbIndex = function($db)
 {
 	return (int) substr($db, 2);
 };
-$redisDatabases = array_values(array_map($getDbIndex, preg_grep("/^db[0-9]+$/", array_keys($data))));
+$vkDatabases = array_values(array_map($getDbIndex, preg_grep("/^db[0-9]+$/", array_keys($data))));
 
 function time_elapsed($secs)
 {
 	if (!$secs) return;
 	$bit = [
-		' year'      => (int) ($secs / 31556926) % 12,
-		' week'      => (int) ($secs / 604800) % 52,
-		' day'       => (int) ($secs / 86400) % 7,
-		' hour'      => (int) ($secs / 3600) % 24,
-		' minute'    => (int) ($secs / 60) % 60,
+		' year'      => floor($secs / 31556926) % 12,
+		' week'      => floor($secs / 604800) % 52,
+		' day'       => floor($secs / 86400) % 7,
+		' hour'      => floor($secs / 3600) % 24,
+		' minute'    => floor($secs / 60) % 60,
 		' second'    => $secs % 60,
 	];
 
@@ -197,8 +197,8 @@ function debug($var, $pre = true)
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Redis Stats</title>
+<meta charset="utf-8">
+<title>Valkey Stats</title>
 <style>
 html {
 	font-size: 16px;
@@ -591,12 +591,12 @@ window.createPie = createPie;
 </script>
 
 </head>
-<body onload="initRedisInfo()">
+<body onload="initVkInfo()">
 <div class="wrapper">   <!-- Wrapper  -->
 <?php if (CHECK_FOR_UPDATE === true) { ?>
 <button id="checkbutton" style="float: right; margin: 20px 10px 20px -200px;" onclick="checkForUpdate();">Check for update</button>
 <?php } ?>
-<h1>Redis Stats <span style="font-size: 50%;"><?php echo $localVersion; ?></span></h1>
+<h1>Valkey Stats <span style="font-size: 50%;"><?php echo $localVersion; ?></span></h1>
 <form method="get">
 <label for="server">Server:</label>
 <select onchange="this.form.submit()" id="server" name="s">
@@ -683,7 +683,7 @@ else
 	<h2>Used Memory</h2>
 
 	<div class="key"><?php echo $data['used_memory_human'] ?></div>
-	<?php if ($data['maxmemory'] > 0) echo "/ ${data['maxmemory_human']}\n"; ?>
+	<?php if ($data['maxmemory'] > 0) echo "/ {$data['maxmemory_human']}\n"; ?>
 	<h2>Peak Memory</h2>
 	<div class="key"><?php echo $data['used_memory_peak_human'] ?></div>
 </div>
@@ -723,12 +723,12 @@ else
 <div class='box col'>
 	<h2>Persistence</h2>
 	<p class="details">Changes since last save: <?php echo number_format($data['rdb_changes_since_last_save']) ?></p>
-	<p class="details">Last saved<br /><?php echo ($data) ? time_elapsed(time() - $data['rdb_last_save_time']) : '0' ?> ago.</p>
+	<p class="details">Last saved<br><?php echo ($data) ? time_elapsed(time() - $data['rdb_last_save_time']) : '0' ?> ago.</p>
 </div>
 
 </div>
 <div class="grid">
-<?php foreach ($redisDatabases as $i) { ?>
+<?php foreach ($vkDatabases as $i) { ?>
 	<div class='box col'>
 		<h2>Keys in store <em><?php echo "db$i" ?></em></h2>
 		<div class="key">
@@ -818,10 +818,10 @@ function toggleDetails() {
 	var state = document.getElementById('allinfo').style.display;
 	if (state == 'inline-block') {
 		document.getElementById('allinfo').style.display = 'none';
-		localStorage.setItem('redisInfoDetails', 'false');
+		localStorage.setItem('vkInfoDetails', 'false');
 	} else {
 		document.getElementById('allinfo').style.display = 'inline-block';
-		localStorage.setItem('redisInfoDetails', 'true');
+		localStorage.setItem('vkInfoDetails', 'true');
 	}
 }
 
@@ -829,10 +829,10 @@ function toggleAsync() {
 	const checked = document.getElementById("checkboxasync").checked;
 
 	if (checked) {
-		localStorage.setItem('redisInfoFlushAsync', 'true');
+		localStorage.setItem('vkInfoFlushAsync', 'true');
 		changeFlushButtons(checked);
 	} else {
-		localStorage.setItem('redisInfoFlushAsync', 'false');
+		localStorage.setItem('vkInfoFlushAsync', 'false');
 		changeFlushButtons(checked);
 	}
 }
@@ -855,18 +855,34 @@ function changeFlushButtons(status) {
 	}
 }
 
-function initRedisInfo() {
+function migrateStorage() {
+	if (localStorage.getItem('redisInfoDetails') != null && localStorage.getItem('vkInfoDetails') == null) {
+		localStorage.setItem('vkInfoDetails', localStorage.getItem('redisInfoDetails'));
+		localStorage.removeItem('redisInfoDetails');
+	}
+	if (localStorage.getItem('redisInfoFlushAsync') != null && localStorage.getItem('vkInfoFlushAsync') == null) {
+		localStorage.setItem('vkInfoFlushAsync', localStorage.getItem('redisInfoFlushAsync'));
+		localStorage.removeItem('redisInfoFlushAsync');
+	}
+	if (localStorage.getItem('redisInfoPlayDelay') != null && localStorage.getItem('vkInfoPlayDelay') == null) {
+		localStorage.setItem('vkInfoPlayDelay', localStorage.getItem('redisInfoPlayDelay'));
+		localStorage.removeItem('redisInfoPlayDelay');
+	}
+}
+
+function initVkInfo() {
 	if (!ERROR) {
-		if (localStorage.getItem('redisInfoDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
-		if (localStorage.getItem('redisInfoFlushAsync') === 'true') {
+		migrateStorage();
+		if (localStorage.getItem('vkInfoDetails') === 'true') document.getElementById('allinfo').style.display = 'inline-block';
+		if (localStorage.getItem('vkInfoFlushAsync') === 'true') {
 			changeFlushButtons(true);
 			document.getElementById("checkboxasync").checked = true;
 		}
-		if (localStorage.getItem('redisInfoPlayDelay')) {
-			doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
+		if (localStorage.getItem('vkInfoPlayDelay')) {
+			doc_rate.value = localStorage.getItem('vkInfoPlayDelay');
 		}
-		if (sessionStorage.getItem('redisInfoPlay') == '1') { // we are still in auto refesh mode
-			doc_rate.value = localStorage.getItem('redisInfoPlayDelay');
+		if (sessionStorage.getItem('vkInfoPlay') == '1') { // we are still in auto refesh mode
+			doc_rate.value = localStorage.getItem('vkInfoPlayDelay');
 			doc_rate.disabled = true;
 			doc_play.innerHTML = "Pause";
 			play = 1;
@@ -890,7 +906,7 @@ function checkForUpdate() {
 					const duration = 5000;
 					doc_msg.style.visibility      = 'visible';
 					doc_msg.style.backgroundColor = successColor;
-					doc_msg.innerHTML             = 'Redis Stats is up to date.';
+					doc_msg.innerHTML             = 'Valkey Stats is up to date.';
 					if (!ERROR) {
 						setTimeout(function() {defaultMsg()}, duration);
 					} else {
@@ -927,20 +943,20 @@ function checkForUpdate() {
 
 function flushDB(server, db) {
 	if ((db == -1) && CONFIRM_FLUSHALL) {
-		if (!confirm("This will flush the entire Redis instance.\n\nAre you sure?")) {
+		if (!confirm("This will flush the entire Valkey instance.\n\nAre you sure?")) {
 			return;
 		}
 	}
-	if (CONFIRM_FLUSHDB) {
+	if ((db != -1) && CONFIRM_FLUSHDB) {
 		if (!confirm("This will flush db"+db+"\n\nAre you sure?")) {
 			return;
 		}
 	}
 	var flushAsync = (localStorage.getItem('redisInfoFlushAsync') === 'true') ? 1 : 0;
-/* KIZ MODIFICATION START
-   REASON: Redis Stats must not use any custom session handling. */
+/* MAH MODIFICATION START
+   REASON: Valkey Stats must not use any custom session handling. */
     const tid = '<?php echo sesskey(); ?>';
-/* KIZ MODIFICATION END */
+/* MAH MODIFICATION END */
 /* ORIGINAL START
 	const tid = '<?php echo $id; ?>';
    ORIGINAL END */
@@ -989,8 +1005,8 @@ function autorefresh() {
 	play = 1;
 	doc_rate.disabled = true;
 	doc_play.innerHTML = "Pause";
-	localStorage.setItem('redisInfoPlayDelay', delay);
-	sessionStorage.setItem('redisInfoPlay', play);
+	localStorage.setItem('vkInfoPlayDelay', delay);
+	sessionStorage.setItem('vkInfoPlay', play);
 	setTimeout("callback()", delay * 1000);
 }
 
@@ -1000,7 +1016,7 @@ function playpause() {
 		play = 0;
 		doc_play.innerHTML = "Play";
 		doc_rate.disabled = false;
-		sessionStorage.setItem('redisInfoPlay', play);
+		sessionStorage.setItem('vkInfoPlay', play);
 	} else {
 		autorefresh();
 	}
