@@ -46,7 +46,7 @@ function tool_redis_get_prefixed_css($css, $prefix) {
         } else {
             $partdetails = explode('{', $part);
             if (substr_count($part, "{") == 2) {
-                $mediaquery = $partdetails[0]."{";
+                $mediaquery = $partdetails[0] . "{";
                 $partdetails[0] = $partdetails[1];
                 $mediaquerystarted = true;
             }
@@ -61,13 +61,13 @@ function tool_redis_get_prefixed_css($css, $prefix) {
             }
 
             if (substr_count($part, "{") == 2) {
-                $part = $mediaquery."\n".implode(', ', $subparts)."{".$partdetails[2];
+                $part = $mediaquery . "\n" . implode(', ', $subparts) . "{" . $partdetails[2];
             } else if (empty($part[0]) && $mediaquerystarted) {
                 $mediaquerystarted = false;
-                $part = implode(', ', $subparts)."{".$partdetails[2]."}\n";
+                $part = implode(', ', $subparts) . "{" . $partdetails[2] . "}\n";
             } else {
                 if (isset($partdetails[1])) {
-                    $part = implode(', ', $subparts)."{".$partdetails[1];
+                    $part = implode(', ', $subparts) . "{" . $partdetails[1];
                 }
             }
 
