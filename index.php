@@ -23,8 +23,8 @@
  */
 
 require(__DIR__ . '/../../../config.php');
-require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/redis/locallib.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/redis/locallib.php');
 global $CFG;
 
 // Set up the plugin's main page as external admin page.
@@ -71,7 +71,7 @@ $cssprefix = '#page-admin-tool-redis-index #region-main';
 $redisstylescode = tool_redis_get_prefixed_css($redisstylescode, $cssprefix);
 
 // Add the Redis Stats styles to the page.
-$CFG->additionalhtmlhead .= '<style>'.$redisstylescode.'</style>';
+$CFG->additionalhtmlhead .= '<style>' . $redisstylescode . '</style>';
 
 // Page setup.
 echo $OUTPUT->header();

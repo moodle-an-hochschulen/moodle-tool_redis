@@ -37,4 +37,4 @@ require_login();
 require_capability('moodle/site:config', context_system::instance());
 
 // Include Valkey Stats Flush DB.
-require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/redis/lib/valkey-stats/flushdb.php.inc');
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/redis/lib/valkey-stats/flushdb.php.inc');
