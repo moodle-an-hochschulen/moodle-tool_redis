@@ -33,8 +33,8 @@ defined('MOODLE_INTERNAL') || die();
 // Servers are defined as an array
 // [ Name, IP/Socket, Port, Password ]
 //
-// Name (string):                     name shown in drop-down list (also used for command mapping)
-// IP/Socket (string):                IP address or socket of the server
+// Name (string):                     name shown in drop-down list (also used for tls options and command mapping)
+// IP/Socket (string):                IP address, hostname, or socket of the server
 // Port (integer):                    port of server, use -1 for socket
 // Password entry (string|array):     credentials for the server (optional)
 // $ret = cache_administration_helper::get_store_instance_summaries();
@@ -83,3 +83,6 @@ define("STATUS_LINE", "bottom");
 
 // Don't show the 'Check for update' button.
 define("CHECK_FOR_UPDATE", false);
+
+// Use the php extension, if loaded.
+define("USE_MODULE_IF_LOADED", true);

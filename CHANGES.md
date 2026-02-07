@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2026-02-07 - Update valkey-stats library to version 1.2.0.
+
 ### v4.5-r2
 
 * 2025-10-15 - Make codechecker happy again
