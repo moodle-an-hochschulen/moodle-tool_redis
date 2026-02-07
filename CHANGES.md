@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v4.5-r3
 
 * 2026-02-07 - Improvement: Connect to Redis with TLS / through a Unix socket / to a Redis cluster if configured in the Moodle caching backend configuration.
 * 2026-02-07 - Update valkey-stats library to version 1.2.0.
