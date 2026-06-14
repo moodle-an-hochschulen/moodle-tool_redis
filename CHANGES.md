@@ -4,6 +4,10 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2026-04-20 - Prepare compatibility for Moodle 5.2.
+
 ### v5.1-r2
 
 * 2026-02-07 - Improvement: Connect to Redis with TLS / through a Unix socket / to a Redis cluster if configured in the Moodle caching backend configuration.
