@@ -60,6 +60,14 @@ $redisguihtml = $redisdoc->saveHTML($redisbodytag);
 $redisstyletag = $redisdoc->getElementsByTagName('style')->item(0);
 $redisstylescode = $redisstyletag->nodeValue;
 
+// Process DOM and extract the script tags from the head tag.
+// These contain helper functions (like createPie()) which are needed by the script in the body tag.
+$redisheadscripts = '';
+$redisheadtag = $redisdoc->getElementsByTagName('head')->item(0);
+foreach ($redisheadtag->getElementsByTagName('script') as $redisscripttag) {
+    $redisheadscripts .= $redisdoc->saveHTML($redisscripttag);
+}
+
 // Throw away any libXML errors which have been raised.
 libxml_clear_errors();
 
@@ -75,6 +83,9 @@ $CFG->additionalhtmlhead .= '<style>' . $redisstylescode . '</style>';
 
 // Page setup.
 echo $OUTPUT->header();
+
+// Output Redis Stats head scripts (before the GUI as the GUI's own script relies on them).
+echo $redisheadscripts;
 
 // Output Redis Stats.
 echo $redisguihtml;
