@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v5.2-r2
 
 * 2026-10-20 - Bugfix: The hit rate pie chart was missing on the Redis management page, resolves #15
 
