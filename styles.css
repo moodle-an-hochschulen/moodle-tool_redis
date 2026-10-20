@@ -2,3 +2,29 @@
 #page-admin-tool-redis-index div[role="main"] {
     overflow-y: hidden;
 }
+
+/* Dark mode: The Valkey Stats GUI ships with hardcoded light backgrounds while its text colour follows the Moodle colour mode.
+   Thus, re-point the light surfaces to the Bootstrap colour mode properties in dark mode. */
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main .box {
+    background-color: var(--bs-secondary-bg);
+    border-color: var(--bs-border-color);
+}
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main .box h2,
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main .box h3 {
+    background-color: var(--bs-tertiary-bg);
+    border-bottom-color: var(--bs-border-color);
+}
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main .box h3 {
+    border-top-color: var(--bs-border-color);
+}
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main #hitrate .key {
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main footer a {
+    color: var(--bs-body-color);
+}
+/* The status messages and the flush buttons get light status tints from the Valkey Stats JS, so keep their text dark. */
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main .boxmsg,
+[data-bs-theme="dark"] #page-admin-tool-redis-index #region-main button[style*="background-color"] {
+    color: #1d2125;
+}
