@@ -1,0 +1,227 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_redis/page
+
+    Admin tool "Redis management" - Main page.
+
+    Shows the statistics of each Redis server which Moodle uses as cache store or session store, each server in its own
+    Bootstrap tab.
+
+    Context variables required for this template:
+    * servers - Array of servers with:
+      * index - Integer, the position of the server.
+      * tabtitle - String, the title of the server's tab.
+      * active - Boolean, true if this server is shown initially.
+      * error - String, an error message if the server could not be queried. All further variables are missing then.
+      * hitrate - String, the hit rate in percent (missing if there weren't any hits or misses yet).
+      * chart - String, the rendered hit rate chart (missing if there weren't any hits or misses yet).
+      * hits, misses, expiredkeys, evictedkeys - Strings, formatted numbers.
+      * memorychart - String, the rendered memory chart (missing if the server has not used any memory yet).
+      * usedmemory, peakmemory - Strings, formatted sizes.
+      * maxmemory - String, formatted size (missing if no memory limit is set).
+      * memorypercent - Integer, the used memory in percent of the memory limit (missing if no memory limit is set).
+      * uptime - String, formatted duration.
+      * connectionsreceived, connectedclients, connectionsrejected, commandsprocessed - Strings, formatted numbers.
+      * changessincelastsave - String, formatted number.
+      * lastsave - String, formatted duration since the last save.
+      * databases - Array of databases with name (e.g. "db0", also used as CSS class suffix), keys, keyswithexpiry,
+        dbhint (hint if the database is used by the Moodle component, empty if there is only one database) and
+        flushbutton (rendered HTML, empty if the database can not be flushed).
+      * sections - Array of INFO sections with id, name and rows (array of key / value pairs).
+
+    Example context (json):
+    {
+        "servers": [
+            {
+                "index": 0,
+                "tabtitle": "Cache store: Redis",
+                "active": true,
+                "hitrate": "97.2%",
+                "chart": "<div>Chart</div>",
+                "hits": "1,234",
+                "misses": "35",
+                "expiredkeys": "12",
+                "evictedkeys": "0",
+                "memorychart": "<div>Chart</div>",
+                "usedmemory": "3.4 MB",
+                "peakmemory": "4.1 MB",
+                "maxmemory": "128 MB",
+                "memorypercent": 3,
+                "uptime": "3 days 4 hours",
+                "connectionsreceived": "567",
+                "connectedclients": "3",
+                "connectionsrejected": "0",
+                "commandsprocessed": "89,012",
+                "changessincelastsave": "42",
+                "lastsave": "5 mins",
+                "databases": [
+                    {"name": "db0", "keys": "1,234", "keyswithexpiry": "1,000", "dbhint": "", "flushbutton": "<button>Flush</button>"}
+                ],
+                "sections": [
+                    {"id": "0-Server", "name": "Server", "rows": [{"key": "redis_version", "value": "7.2.4"}]}
+                ]
+            }
+        ]
+    }
+}}
+<ul class="nav nav-tabs mb-3" role="tablist">
+    {{#servers}}
+    <li class="nav-item" role="presentation">
+        <a class="nav-link{{#active}} active{{/active}}" id="tool_redis-tab-{{index}}" data-toggle="tab" href="#tool_redis-pane-{{index}}" role="tab" aria-controls="tool_redis-pane-{{index}}" aria-selected="{{#active}}true{{/active}}{{^active}}false{{/active}}">{{tabtitle}}</a>
+    </li>
+    {{/servers}}
+</ul>
+<div class="tab-content">
+    {{#servers}}
+    <div class="tab-pane fade{{#active}} show active{{/active}}" id="tool_redis-pane-{{index}}" role="tabpanel" aria-labelledby="tool_redis-tab-{{index}}">
+        {{#error}}
+        <div class="alert alert-danger" role="alert">{{error}}</div>
+        {{/error}}
+        {{^error}}
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="card h-100 tool_redis-card tool_redis-card-hits">
+                    <h2 class="card-header h5 mb-0">{{#str}}hits, tool_redis{{/str}}</h2>
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="row align-items-center">
+                            <div class="col-sm-5 text-center">
+                                {{{chart}}}
+                            </div>
+                            <div class="col-sm-7">
+                                <p class="h1 font-weight-bold text-center mb-2">{{hitrate}}{{^hitrate}}&ndash;{{/hitrate}}</p>
+                                <dl class="row mb-0">
+                                    <dt class="col-8 font-weight-normal">{{#str}}hits, tool_redis{{/str}}</dt>
+                                    <dd class="col-4 text-right mb-1">{{hits}}</dd>
+                                    <dt class="col-8 font-weight-normal">{{#str}}misses, tool_redis{{/str}}</dt>
+                                    <dd class="col-4 text-right mb-1">{{misses}}</dd>
+                                    <dt class="col-8 font-weight-normal">{{#str}}expiredkeys, tool_redis{{/str}}</dt>
+                                    <dd class="col-4 text-right mb-1">{{expiredkeys}}</dd>
+                                    <dt class="col-8 font-weight-normal">{{#str}}evictedkeys, tool_redis{{/str}}</dt>
+                                    <dd class="col-4 text-right mb-0">{{evictedkeys}}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="card h-100 tool_redis-card tool_redis-card-memory">
+                    <h2 class="card-header h5 mb-0">{{#str}}memory, tool_redis{{/str}}</h2>
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="row align-items-center">
+                            <div class="col-sm-5 text-center">
+                                {{{memorychart}}}
+                            </div>
+                            <div class="col-sm-7 text-center">
+                                <p class="text-muted mb-0">{{#str}}usedmemory, tool_redis{{/str}}</p>
+                                <p class="h4 font-weight-bold mb-3">{{usedmemory}}</p>
+                                <p class="text-muted mb-0">{{#str}}peakmemory, tool_redis{{/str}}</p>
+                                <p class="h4 font-weight-bold mb-0{{#maxmemory}} mb-3{{/maxmemory}}">{{peakmemory}}</p>
+                                {{#maxmemory}}
+                                <p class="text-muted mb-0">{{#str}}memorylimit, tool_redis{{/str}}</p>
+                                <p class="h4 font-weight-bold mb-0">{{maxmemory}}</p>
+                                <p class="text-muted mb-0">{{#str}}memorylimitusage, tool_redis{{/str}}: {{memorypercent}}%</p>
+                                {{/maxmemory}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 tool_redis-card tool_redis-card-uptime">
+                    <h2 class="card-header h5 mb-0">{{#str}}uptime, tool_redis{{/str}}</h2>
+                    <div class="card-body d-flex align-items-center justify-content-center text-center">
+                        <p class="h4 font-weight-bold mb-0">{{uptime}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 tool_redis-card tool_redis-card-connection">
+                    <h2 class="card-header h5 mb-0">{{#str}}connection, tool_redis{{/str}}</h2>
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <dl class="row mb-0">
+                            <dt class="col-8 font-weight-normal">{{#str}}connectionsreceived, tool_redis{{/str}}</dt>
+                            <dd class="col-4 text-right mb-1">{{connectionsreceived}}</dd>
+                            <dt class="col-8 font-weight-normal">{{#str}}connectedclients, tool_redis{{/str}}</dt>
+                            <dd class="col-4 text-right mb-1">{{connectedclients}}</dd>
+                            <dt class="col-8 font-weight-normal">{{#str}}connectionsrejected, tool_redis{{/str}}</dt>
+                            <dd class="col-4 text-right mb-1">{{connectionsrejected}}</dd>
+                            <dt class="col-8 font-weight-normal">{{#str}}commandsprocessed, tool_redis{{/str}}</dt>
+                            <dd class="col-4 text-right mb-0">{{commandsprocessed}}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 tool_redis-card tool_redis-card-persistence">
+                    <h2 class="card-header h5 mb-0">{{#str}}persistence, tool_redis{{/str}}</h2>
+                    <div class="card-body d-flex flex-column justify-content-center text-center">
+                        <p class="text-muted mb-0">{{#str}}changessincelastsave, tool_redis{{/str}}</p>
+                        <p class="h2 font-weight-bold mb-3">{{changessincelastsave}}</p>
+                        <p class="mb-0">{{#str}}lastsave, tool_redis, {{lastsave}}{{/str}}</p>
+                    </div>
+                </div>
+            </div>
+            {{#databases}}
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 tool_redis-card tool_redis-card-keys tool_redis-card-{{name}}">
+                    <h2 class="card-header h5 mb-0">{{#str}}keys, tool_redis, {{name}}{{/str}}</h2>
+                    <div class="card-body d-flex flex-column justify-content-center text-center">
+                        <p class="h1 font-weight-bold mb-0 tool_redis-keycount">{{keys}}</p>
+                        <p class="text-muted mb-2">{{#str}}keyswithexpiry, tool_redis{{/str}}: {{keyswithexpiry}}</p>
+                        {{#dbhint}}
+                        <p class="small text-muted">{{dbhint}}</p>
+                        {{/dbhint}}
+                        {{#flushbutton}}
+                        <div class="d-flex justify-content-center">{{{flushbutton}}}</div>
+                        {{/flushbutton}}
+                    </div>
+                </div>
+            </div>
+            {{/databases}}
+        </div>
+        <h2 class="h4 mt-2">{{#str}}details, tool_redis{{/str}}</h2>
+        <div class="accordion" id="tool_redis-details-{{index}}">
+            {{#sections}}
+            <div class="card">
+                <div class="card-header p-0">
+                    <h3 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#tool_redis-section-{{id}}" aria-expanded="false" aria-controls="tool_redis-section-{{id}}">{{name}}</button>
+                    </h3>
+                </div>
+                <div id="tool_redis-section-{{id}}" class="collapse" data-parent="#tool_redis-details-{{index}}">
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-striped mb-0">
+                            <tbody>
+                                {{#rows}}
+                                <tr>
+                                    <th scope="row" class="font-weight-normal pl-3 w-25">{{key}}</th>
+                                    <td class="text-monospace text-break pr-3">{{value}}</td>
+                                </tr>
+                                {{/rows}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {{/sections}}
+        </div>
+        {{/error}}
+    </div>
+    {{/servers}}
+</div>

@@ -17,9 +17,7 @@ Motivation for this plugin
 
 For performance reasons, Moodle should always be run with a Caching backend. Redis is such a caching backend which Moodle can connect to. Unfortunately, Redis is kind of a black box and doesn't provide a management interface by default.
 
-Luckily, there are some free Redis management GUIs out there with Valkey Stats by Helmut K. C. Tessarek (https://github.com/tessus/valkey-stats) being a really nice and compact one. As a Moodle server administrator, you can just throw Valkey Stats somewhere onto your Moodle server and get a Redis management GUI instantly. However, this approach requires that you protect Valkey Stats from unauthorized access manually in your webserver and comes with the downside that Valkey Stats is located outside Moodle.
-
-For these reasons, we have packaged Valkey Stats as a very simple Moodle admin tool providing it within Moodle site adminstration for Moodle administrators only.
+This plugin adds a compact Redis management page to Moodle site administration. It shows the most important statistics of each Redis server which Moodle uses as cache store or as session store (hit rate, memory, uptime, connections, persistence and the number of keys per database), the full INFO response of the server for the details and allows Moodle administrators to flush a Redis database directly from within Moodle.
 
 
 Installation
@@ -39,7 +37,15 @@ After installing the plugin, it is active and fully working.
 To use the plugin, please visit:
 Site administration -> Server -> Redis management.
 
-The Redis management GUI should be self-explanatory for experienced PHP administrators.
+The Redis management page shows one tab per Redis cache store instance which is configured in Site administration -> Plugins -> Caching -> Configuration.
+
+If Redis is configured as session handler in config.php ($CFG->session_handler_class = '\core\session\redis' together with the $CFG->session_redis_* settings), the page shows an additional tab for the Redis session store.
+
+For each Redis server, the page shows the hit rate, the memory usage, the uptime, the connection statistics, the persistence status and the number of keys per database. If a Redis server holds more than one database, the page tells you which of the databases is used by the Moodle cache store or by the Moodle session handler.
+
+Each database can be flushed with the corresponding button after a confirmation. The details section at the bottom of the page shows the full INFO response of the Redis server.
+
+If there isn't any Redis cache store instance configured yet and Redis is not configured as session handler either, the Redis management page redirects you to the cache store configuration.
 
 
 Capabilities
@@ -57,19 +63,17 @@ This plugin does not add any additional scheduled tasks.
 How this plugin works
 ---------------------
 
-This plugin works in a really simple way. It adds an admin tool page to Moodle's site administration tree and restricts access to this admin tool page to Moodle administrators (and other users having the moodle/site:config capability). The Redis management GUI is shipped as a library file with this plugin and is just included on the admin tool page.
+This plugin works in a really simple way. It adds an admin tool page to Moodle's site administration tree and restricts access to this admin tool page to Moodle administrators (and other users having the moodle/site:config capability).
+
+The plugin connects to the Redis servers in exactly the same way as the Redis cache store and the Redis session handler from Moodle core do. It re-uses the connection code of these two core components, so all connection options of the cache store configuration and of the session handler configuration (host and port, Unix socket, TLS encryption, password, cluster mode, connection and read timeouts) are supported without any additional configuration. For a Redis cluster, the page shows one tab per master node of the cluster.
+
+The statistics are gathered with a single INFO command per Redis server. Flushing a database is done with the FLUSHDB command. Flushing the whole Redis instance (i.e. all of its databases, including data which is not Moodle cache data, like sessions) is not possible with this plugin.
 
 
 Security note
 -------------
 
-The Redis management GUI was added as a library to this Moodle plugin and the library files were renamed to /lib/redis-gui/redis.php.inc and /lib/redis-gui/flushdb.php.inc.
-
-There is a potential for sensitive data leak, not personal data but data about the webserver's PHP configuration, if your webserver is configured to interpret *.inc files as PHP. An anonymous user could then visit the library's index page directly via https://yourmoodle.com/admin/tool/redis/lib/redis-gui/redis.php.inc and would see the Redis management GUI circumventing Moodle's access control.
-
-Similarly, there is also a potential for a performance degradation attack if your webserver is configured to interpret *.inc files as PHP. An anonymous user could then visit the library's flush page directly via https://yourmoodle.com/admin/tool/redis/lib/redis-gui/flushdb.php.inc with appropriate parameters and would flush the Redis DB circumventing Moodle's access control.
-
-Please make sure that your webserver does not interpret *.inc files as PHP (which should be the default) or take any other measure that this file can not be accessed directly by a browser.
+The flush operation of the Redis management page is protected against cross-site request forgery with Moodle's sesskey and is only possible for users having the moodle/site:config capability. Please note that flushing a Redis database deletes all keys in this database, not only the keys of the Moodle cache store. If you flush the database which holds the Moodle sessions, all users (including yourself) are logged out.
 
 
 Theme support
@@ -171,5 +175,4 @@ It was contributed to the Moodle an Hochschulen e.V. plugin catalogue in 2022.
 Credits
 -------
 
-This Moodle plugin is only a simple wrapper for the Valkey Stats management GUI by Helmut K. C. Tessarek.
-Helmut owns all copyrights for Valkey Stats and maintains this tool on https://github.com/tessus/valkey-stats.
+Until version v4.5-r4, this plugin was a simple wrapper for the Valkey Stats management GUI by Helmut K. C. Tessarek (https://github.com/tessus/valkey-stats). The current implementation does not use any third-party code anymore, but its feature set is still inspired by Valkey Stats.
