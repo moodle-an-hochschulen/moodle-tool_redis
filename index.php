@@ -19,76 +19,96 @@
  *
  * @package    tool_redis
  * @copyright  2020 Alexander Bias, Ulm University <alexander.bias@uni-ulm.de>
+ * @copyright  2026 Alexander Bias <bias@alexanderbias.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\notification;
+use tool_redis\local\server;
+
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/redis/locallib.php');
-global $CFG;
 
 // Set up the plugin's main page as external admin page.
 admin_externalpage_setup('tool_redis');
 
-// Page setup.
+// Get the parameters.
+$serverindex = optional_param('server', 0, PARAM_INT);
+$action = optional_param('action', '', PARAM_ALPHA);
+
+// If there isn't any Redis server configured (neither as cache store nor as session store), there is nothing to show.
+// Thus, redirect to the cache store configuration and ask the admin to configure a Redis store there.
+$redisservers = server::get_all();
+if (empty($redisservers)) {
+    redirect(
+        new moodle_url('/cache/admin.php'),
+        get_string('noredisstoreconfigured', 'tool_redis'),
+        null,
+        notification::NOTIFY_INFO,
+    );
+}
+
+// Build the list of servers to show: One per Redis server or, in cluster mode, one per master node of the server.
+$servers = [];
+foreach ($redisservers as $redisserver) {
+    foreach ($redisserver->get_nodes() as $node) {
+        $suffix = ($node['label'] === null) ? '' : ' (' . $node['label'] . ')';
+        $servers[] = [
+            'server' => $redisserver,
+            'node' => $node['node'],
+            'name' => $redisserver->name . $suffix,
+            'tabtitle' => $redisserver->tabtitle . $suffix,
+        ];
+    }
+}
+
+// If not proper server is given, we have to stop here.
+if (!isset($servers[$serverindex])) {
+    throw new moodle_exception('invalidparameter', 'debug');
+}
+
+// Compose the page URL.
+$pageurl = new moodle_url('/' . $CFG->admin . '/tool/redis/index.php', ['server' => $serverindex]);
+
+// Process the flush action.
+if ($action === 'flush') {
+    // Require the sesskey.
+    require_sesskey();
+
+    // The database number must be given and must not be negative. There is no upper limit as the number of
+    // databases is a configuration setting of the Redis server which we do not know here, Redis itself rejects
+    // non-existent databases when the database is selected.
+    $db = required_param('db', PARAM_INT);
+    if ($db < 0) {
+        throw new moodle_exception('invalidparameter', 'debug');
+    }
+
+    // Flush the database on the given server (or, in cluster mode, on the given master node of the server).
+    // The flush is only attempted if the server is reachable. Any connection or command error is caught and reported
+    // to the admin as failed flush instead of showing an exception page.
+    $server = $servers[$serverindex];
+    try {
+        $flushed = $server['server']->is_ready() && $server['server']->flush_database($db, $server['node']);
+    } catch (RedisException | RedisClusterException $e) {
+        $flushed = false;
+    }
+
+    // Redirect back to the tab of the server with a notification about the result. The redirect also makes sure
+    // that the page shows the fresh key counts and that a page reload does not repeat the flush request.
+    $a = ['db' => 'db' . $db, 'server' => $server['name']];
+    if ($flushed) {
+        redirect($pageurl, get_string('flushsuccess', 'tool_redis', $a), null, notification::NOTIFY_SUCCESS);
+    }
+    redirect($pageurl, get_string('flushfailed', 'tool_redis', $a), null, notification::NOTIFY_ERROR);
+}
+
+// Output the page.
+$PAGE->set_url($pageurl);
 $title = get_string('pluginname', 'tool_redis');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
-// Output has to be buffered because we want to modify the Redis Stats HTML code.
-ob_start();
-
-// Include Redis Stats.
-require_once(__DIR__ . '/lib/valkey-stats/valkey-stats.php.inc');
-
-// Get buffered content and finish buffering.
-$output = ob_get_contents();
-ob_end_clean();
-
-// Take control over libXML error handling as the Redis Stats HTML code is not perfect.
-libxml_use_internal_errors(true);
-
-// Process Redis Stats HTML code into a DOMDocument object.
-$redisdoc = new DOMDocument();
-$redisdoc->loadHTML($output);
-
-// Process DOM and extract the body tag.
-$redisbodytag = $redisdoc->getElementsByTagName('body')->item(0);
-$redisguihtml = $redisdoc->saveHTML($redisbodytag);
-
-// Process DOM and extract the style tag.
-$redisstyletag = $redisdoc->getElementsByTagName('style')->item(0);
-$redisstylescode = $redisstyletag->nodeValue;
-
-// Process DOM and extract the script tags from the head tag.
-// These contain helper functions (like createPie()) which are needed by the script in the body tag.
-$redisheadscripts = '';
-$redisheadtag = $redisdoc->getElementsByTagName('head')->item(0);
-foreach ($redisheadtag->getElementsByTagName('script') as $redisscripttag) {
-    $redisheadscripts .= $redisdoc->saveHTML($redisscripttag);
-}
-
-// Throw away any libXML errors which have been raised.
-libxml_clear_errors();
-
-// Finish control over libXML error handling.
-libxml_use_internal_errors(false);
-
-// Prefix all styles to avoid any conflicts with Moodle styles.
-$cssprefix = '#page-admin-tool-redis-index #region-main';
-$redisstylescode = tool_redis_get_prefixed_css($redisstylescode, $cssprefix);
-
-// Add the Redis Stats styles to the page.
-$CFG->additionalhtmlhead .= '<style>' . $redisstylescode . '</style>';
-
-// Page setup.
+$renderer = $PAGE->get_renderer('tool_redis');
 echo $OUTPUT->header();
-
-// Output Redis Stats head scripts (before the GUI as the GUI's own script relies on them).
-echo $redisheadscripts;
-
-// Output Redis Stats.
-echo $redisguihtml;
-
-// Page setup.
+echo $renderer->render_page($servers, $serverindex);
 echo $OUTPUT->footer();
