@@ -11,12 +11,6 @@ General
 * Thus, the upgrading effort is low.
 
 
-Upstream changes
-----------------
-
-* This plugin relies on the thiry-party Valkey Stats management GUI tool which is located within the plugin directory. Every now and then, it should be checked if there is a new version which could be updated in the plugin.
-
-
 Automated tests
 ---------------
 
@@ -32,4 +26,4 @@ Manual tests
 Visual checks
 -------------
 
-* It might be advisable to have a look at the admin page of the plugin in the Moodle GUI as Moodle themes or the Redis Stats management GUI itself can always change small details in this area.
+* It might be advisable to have a look at the admin page of the plugin in the Moodle GUI as Moodle themes can always change small details in this area, especially the Bootstrap tabs, cards and accordion which are used on the page as well as the hit rate chart which is rendered with Moodle core's chart library.

@@ -4,6 +4,15 @@ moodle-tool_redis
 Changes
 -------
 
+### Unreleased
+
+* 2026-11-09 - Improvement: Show the Redis server which is configured as Moodle session store on the Redis management page as well, re-using the connection code of the Redis session handler from Moodle core, and tell which database of a Redis server is used by the Moodle cache store or by the Moodle session handler, including Behat tests.
+* 2026-11-08 - Improvement: Replace the third-party Valkey Stats management GUI with an own lightweight implementation of the Redis management page, resolves #5.
+               The page now re-uses the connection code of the Redis cache store from Moodle core (including TLS, Unix sockets, cluster mode, passwords and timeouts), shows one Bootstrap tab per Redis cache store instance, shows the hit rate chart with Moodle core's chart library, shows the INFO details in a Bootstrap accordion and flushes a database after a Moodle confirmation modal.
+               The auto refresh feature, the async flush option and the possibility to flush the whole Redis instance have been dropped.
+* 2026-11-08 - Improvement: Redirect to the cache store configuration with a notification instead of throwing an exception if the Redis management page is called and there isn't any Redis cache store instance configured, including a Behat test.
+* 2026-11-08 - Tests: Add Behat tests for the flush operation, covering flushing a Redis database as well as rejecting flush requests with an invalid sesskey, without a database, for an invalid database, for an invalid server and of non-admin users. The Behat tests are split into general tests of the plugin, tests for Redis cache stores and tests for the Redis session store.
+
 ### v5.1-r3
 
 * 2026-10-20 - Bugfix: The hit rate pie chart was missing on the Redis management page, resolves #15
