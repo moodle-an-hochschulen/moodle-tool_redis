@@ -1,4 +1,6 @@
-/* Get rid of second vertical scrollbar around OPcache GUI */
-#page-admin-tool-redis-index div[role="main"] {
-    overflow-y: hidden;
+/* Boost gives the core chart container a fixed viewport-based size on large screens.
+   On the Redis management page, the hit rate chart has to fit into its card column instead. */
+#page-admin-tool-redis-index .chart-area .chart-image {
+    width: 100%;
+    height: 14rem;
 }
