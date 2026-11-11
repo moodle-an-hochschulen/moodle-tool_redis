@@ -4,7 +4,7 @@ moodle-tool_redis
 Changes
 -------
 
-### Unreleased
+### v5.3-r2
 
 * 2026-11-09 - Improvement: Show the Redis server which is configured as Moodle session store on the Redis management page as well, re-using the connection code of the Redis session handler from Moodle core, and tell which database of a Redis server is used by the Moodle cache store or by the Moodle session handler, including Behat tests.
 * 2026-11-08 - Improvement: Replace the third-party Valkey Stats management GUI with an own lightweight implementation of the Redis management page, resolves #5.
