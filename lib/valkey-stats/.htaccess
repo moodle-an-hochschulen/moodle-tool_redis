@@ -1,0 +1,3 @@
+<Files "*.php.inc">
+    Require all denied
+</Files>
